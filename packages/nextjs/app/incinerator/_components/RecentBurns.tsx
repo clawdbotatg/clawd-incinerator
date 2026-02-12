@@ -33,7 +33,7 @@ export function RecentBurns() {
 
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 max-w-md mx-auto">
-      <h2 className="text-lg font-bold text-white mb-4">🔥 Burn Log</h2>
+      <h2 className="text-lg font-bold text-white mb-4">🗓️ Last Burn</h2>
 
       {isLoading ? (
         <div className="text-zinc-600 text-center py-8 text-sm">Loading...</div>
