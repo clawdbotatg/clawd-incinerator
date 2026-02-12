@@ -38,7 +38,7 @@ export function RecentBurns() {
 
             return (
               <div
-                key={`${(event as any).log?.transactionHash || (event as any).transactionHash || i}-${i}`}
+                key={`${event.transactionHash}-${i}`}
                 className="flex items-center justify-between bg-zinc-800 rounded-xl px-4 py-3"
               >
                 <div className="flex items-center gap-2">
