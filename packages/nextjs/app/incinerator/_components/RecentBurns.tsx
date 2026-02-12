@@ -1,22 +1,14 @@
 "use client";
 
+import { Address } from "@scaffold-ui/components";
 import { formatEther } from "viem";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
-
-// Simple address display
-function ShortAddress({ address }: { address: string }) {
-  return (
-    <span className="font-mono text-xs text-zinc-300">
-      {address.slice(0, 6)}...{address.slice(-4)}
-    </span>
-  );
-}
 
 export function RecentBurns() {
   const { data: events, isLoading } = useScaffoldEventHistory({
     contractName: "Incinerator",
     eventName: "Incinerated",
-    fromBlock: BigInt(0),
+    fromBlock: BigInt(42000000),
     watch: true,
   });
 
@@ -46,12 +38,12 @@ export function RecentBurns() {
 
             return (
               <div
-                key={`${event.log.transactionHash}-${i}`}
+                key={`${(event as any).log?.transactionHash || (event as any).transactionHash || i}-${i}`}
                 className="flex items-center justify-between bg-zinc-800 rounded-xl px-4 py-3"
               >
                 <div className="flex items-center gap-2">
                   <span className="text-orange-500 text-sm">🔥</span>
-                  <ShortAddress address={caller} />
+                  <Address address={caller} size="xs" />
                 </div>
                 <div className="text-right">
                   <div className="text-orange-400 font-mono text-xs">-{formatClawd(burned)}</div>
