@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { hardhat } from "viem/chains";
@@ -77,11 +76,9 @@ export const Header = () => {
           </ul>
         </details>
         <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
-          <div className="flex relative w-10 h-10">
-            <Image alt="SE2 logo" className="cursor-pointer" fill src="/logo.svg" />
-          </div>
+          <span className="text-3xl cursor-pointer">🔥</span>
           <div className="flex flex-col">
-            <span className="font-bold leading-tight">🔥 Incinerator</span>
+            <span className="font-bold leading-tight">Incinerator</span>
             <span className="text-xs">CLAWD Token Burner</span>
           </div>
         </Link>
