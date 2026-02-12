@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { formatEther } from "viem";
 import { useAccount, useSwitchChain } from "wagmi";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -118,16 +118,12 @@ export function IncineratorPanel() {
         {countdown > 0 ? (
           <>
             <div className="text-zinc-500 text-xs uppercase tracking-wider mb-2">Next burn in</div>
-            <div className="text-5xl font-mono font-bold text-white tabular-nums">
-              {formatTime(countdown)}
-            </div>
+            <div className="text-5xl font-mono font-bold text-white tabular-nums">{formatTime(countdown)}</div>
           </>
         ) : (
           <>
             <div className="text-orange-400 text-xs uppercase tracking-wider mb-2 animate-pulse">Ready to burn</div>
-            <div className="text-5xl font-mono font-bold text-orange-400">
-              🔥🔥🔥
-            </div>
+            <div className="text-5xl font-mono font-bold text-orange-400">🔥🔥🔥</div>
           </>
         )}
       </div>

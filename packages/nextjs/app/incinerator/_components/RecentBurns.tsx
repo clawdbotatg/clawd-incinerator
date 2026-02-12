@@ -2,6 +2,7 @@
 
 import { formatEther } from "viem";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
+
 // Simple address display
 function ShortAddress({ address }: { address: string }) {
   return (
@@ -35,9 +36,7 @@ export function RecentBurns() {
       {isLoading ? (
         <div className="text-zinc-600 text-center py-8 text-sm">Loading...</div>
       ) : recentEvents.length === 0 ? (
-        <div className="text-zinc-600 text-center py-8 text-sm">
-          No burns yet. Be the first caller! 🔥
-        </div>
+        <div className="text-zinc-600 text-center py-8 text-sm">No burns yet. Be the first caller! 🔥</div>
       ) : (
         <div className="space-y-2 max-h-80 overflow-y-auto">
           {recentEvents.map((event, i) => {
@@ -55,12 +54,8 @@ export function RecentBurns() {
                   <ShortAddress address={caller} />
                 </div>
                 <div className="text-right">
-                  <div className="text-orange-400 font-mono text-xs">
-                    -{formatClawd(burned)}
-                  </div>
-                  <div className="text-green-400 font-mono text-[10px]">
-                    +{formatClawd(reward)} reward
-                  </div>
+                  <div className="text-orange-400 font-mono text-xs">-{formatClawd(burned)}</div>
+                  <div className="text-green-400 font-mono text-[10px]">+{formatClawd(reward)} reward</div>
                 </div>
               </div>
             );
