@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { formatEther } from "viem";
 import { useAccount, useSwitchChain } from "wagmi";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -97,20 +97,31 @@ export function IncineratorPanel() {
     return `~$${usd.toFixed(4)}`;
   };
 
-  // Countdown timer
+  // Countdown timer — use a target timestamp to avoid glitches from contract re-fetches
+  const targetTimeRef = useRef<number | null>(null);
+
   useEffect(() => {
-    if (timeUntilNext !== undefined) {
-      setCountdown(Number(timeUntilNext));
+    if (timeUntilNext === undefined) return;
+    const contractSeconds = Number(timeUntilNext);
+    const newTarget = Date.now() + contractSeconds * 1000;
+
+    // Only update the target if it differs meaningfully (>2s) from current,
+    // preventing re-fetch jitter from resetting the countdown
+    if (targetTimeRef.current === null || Math.abs(newTarget - targetTimeRef.current) > 2000) {
+      targetTimeRef.current = newTarget;
+      setCountdown(contractSeconds);
     }
   }, [timeUntilNext]);
 
   useEffect(() => {
-    if (countdown <= 0) return;
-    const interval = setInterval(() => {
-      setCountdown(prev => Math.max(0, prev - 1));
-    }, 1000);
+    if (targetTimeRef.current === null) return;
+    const tick = () => {
+      const remaining = Math.max(0, Math.round((targetTimeRef.current! - Date.now()) / 1000));
+      setCountdown(remaining);
+    };
+    const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
-  }, [countdown]);
+  }, [targetTimeRef.current]);
 
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600);
