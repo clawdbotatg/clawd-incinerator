@@ -110,6 +110,16 @@ export function IncineratorPanel() {
   };
 
   const isReady = canBurn && countdown === 0;
+  const isCoolingDown = countdown > 0;
+  const isEmpty = !canBurn && countdown === 0;
+
+  const getButtonText = () => {
+    if (isIncinerating) return "🔥 Burning...";
+    if (isReady) return "🔥 INCINERATE 🔥";
+    if (isCoolingDown) return `⏱️ ${formatTime(countdown)}`;
+    if (isEmpty) return "💀 No CLAWD to burn";
+    return "⏱️ Loading...";
+  };
 
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 max-w-md mx-auto text-center">
@@ -159,7 +169,7 @@ export function IncineratorPanel() {
                 : "bg-zinc-800 text-zinc-600 cursor-not-allowed"
             }`}
           >
-            {isIncinerating ? "🔥 Burning..." : isReady ? "🔥 INCINERATE 🔥" : "⏱️ Waiting..."}
+            {getButtonText()}
           </button>
         )}
       </div>
