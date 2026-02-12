@@ -1,11 +1,37 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { formatEther } from "viem";
 import { useAccount, useSwitchChain } from "wagmi";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
+
+const CLAWD_TOKEN_ADDRESS = "0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07";
+
+function useClawdPrice() {
+  const [price, setPrice] = useState<number | null>(null);
+  const fetchPrice = useCallback(async () => {
+    try {
+      const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${CLAWD_TOKEN_ADDRESS}`);
+      const data = await res.json();
+      const pairs = data?.pairs;
+      if (pairs?.[0]?.priceUsd) {
+        setPrice(parseFloat(pairs[0].priceUsd));
+      }
+    } catch {
+      /* silently fail — USD display is optional */
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPrice();
+    const interval = setInterval(fetchPrice, 60_000); // refresh every 60s
+    return () => clearInterval(interval);
+  }, [fetchPrice]);
+
+  return price;
+}
 
 export function IncineratorPanel() {
   const [isIncinerating, setIsIncinerating] = useState(false);
@@ -59,6 +85,17 @@ export function IncineratorPanel() {
   void _cooldownSeconds; // used for future display
 
   const { writeContractAsync: writeIncinerator } = useScaffoldWriteContract({ contractName: "Incinerator" });
+
+  const clawdPrice = useClawdPrice();
+
+  const formatUsd = (clawdAmount: bigint | undefined) => {
+    if (!clawdAmount || !clawdPrice) return "";
+    const tokens = Number(formatEther(clawdAmount));
+    const usd = tokens * clawdPrice;
+    if (usd >= 1000) return `~$${(usd / 1000).toFixed(1)}K`;
+    if (usd >= 1) return `~$${usd.toFixed(2)}`;
+    return `~$${usd.toFixed(4)}`;
+  };
 
   // Countdown timer
   useEffect(() => {
@@ -142,9 +179,11 @@ export function IncineratorPanel() {
       <div className="mb-6 space-y-1">
         <div className="text-zinc-400 text-sm">
           Burns <span className="text-orange-400 font-mono font-bold">{formatClawd(burnAmount)}</span> $CLAWD
+          {formatUsd(burnAmount) && <span className="text-zinc-600 text-xs ml-1">({formatUsd(burnAmount)})</span>}
         </div>
         <div className="text-zinc-400 text-sm">
           Caller earns <span className="text-green-400 font-mono font-bold">{formatClawd(callerReward)}</span> $CLAWD
+          {formatUsd(callerReward) && <span className="text-zinc-600 text-xs ml-1">({formatUsd(callerReward)})</span>}
         </div>
       </div>
 
@@ -179,6 +218,7 @@ export function IncineratorPanel() {
         <div>
           <div className="text-zinc-500 text-[10px] uppercase tracking-wider">Total Burned</div>
           <div className="text-orange-400 font-mono font-bold text-lg">{formatClawd(totalBurned)}</div>
+          {formatUsd(totalBurned) && <div className="text-zinc-600 text-[10px] font-mono">{formatUsd(totalBurned)}</div>}
         </div>
         <div>
           <div className="text-zinc-500 text-[10px] uppercase tracking-wider">Burns</div>
@@ -187,6 +227,7 @@ export function IncineratorPanel() {
         <div>
           <div className="text-zinc-500 text-[10px] uppercase tracking-wider">Remaining</div>
           <div className="text-green-400 font-mono font-bold text-lg">{formatClawd(clawdBalance)}</div>
+          {formatUsd(clawdBalance) && <div className="text-zinc-600 text-[10px] font-mono">{formatUsd(clawdBalance)}</div>}
         </div>
       </div>
     </div>

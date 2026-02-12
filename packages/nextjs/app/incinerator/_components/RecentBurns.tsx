@@ -2,13 +2,23 @@
 
 import { Address } from "@scaffold-ui/components";
 import { formatEther } from "viem";
+import { useBlockNumber } from "wagmi";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
+import { useTargetNetwork } from "~~/hooks/scaffold-eth";
+
+// 9 hours of blocks on Base (~2s per block)
+const NINE_HOURS_IN_BLOCKS = BigInt((9 * 3600) / 2);
 
 export function RecentBurns() {
+  const { targetNetwork } = useTargetNetwork();
+  const { data: currentBlock } = useBlockNumber({ chainId: targetNetwork.id, watch: true });
+
+  const fromBlock = currentBlock ? currentBlock - NINE_HOURS_IN_BLOCKS : BigInt(0);
+
   const { data: events, isLoading } = useScaffoldEventHistory({
     contractName: "Incinerator",
     eventName: "Incinerated",
-    fromBlock: BigInt(42000000),
+    fromBlock: fromBlock > BigInt(0) ? fromBlock : BigInt(0),
     watch: true,
   });
 

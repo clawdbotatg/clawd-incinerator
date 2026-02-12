@@ -9,15 +9,8 @@ const INCINERATOR_ADDRESS = "0x536453350f2eee2eb8bfee1866baf4fca494a092";
 export default function Home() {
   return (
     <div className="min-h-screen bg-black">
-      {/* Hero */}
+      {/* Hero — no h1, header already shows app name */}
       <div className="text-center pt-12 pb-8 px-4">
-        <h1 className="text-5xl font-black text-white mb-2">
-          🔥{" "}
-          <span className="bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
-            INCINERATOR
-          </span>{" "}
-          🔥
-        </h1>
         <p className="text-zinc-500 max-w-sm mx-auto">
           Call <code className="text-orange-400 text-sm">incinerate()</code> to burn $CLAWD and earn a reward.
         </p>
